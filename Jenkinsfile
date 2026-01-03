@@ -2,22 +2,33 @@ pipeline {
     agent any
 
     stages {
-        stage('Build') {
+
+        stage('Clone Code from GitHub') {
             steps {
-                echo 'Build Started'
+                git branch: 'main',
+                    url: 'https://github.com/princeshubh-dev/Demo1.git'
             }
         }
 
-        stage('Test') {
+        stage('Deploy Static Website') {
             steps {
-                echo 'Testing Application'
+                sh '''
+                echo "Cleaning old website files"
+                sudo rm -rf /var/www/html/*
+
+                echo "Deploying new files"
+                sudo cp -r * /var/www/html/
+                '''
             }
         }
+    }
 
-        stage('Deploy') {
-            steps {
-                echo 'Deploying Application'
-            }
+    post {
+        success {
+            echo "✅ Website deployed successfully"
+        }
+        failure {
+            echo "❌ Deployment failed"
         }
     }
 }
